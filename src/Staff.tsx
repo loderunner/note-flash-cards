@@ -59,8 +59,8 @@ export default function Staff({ notes, clef }: Props) {
         'flex-col',
         'items-center',
         'justify-center',
-        'p-4',
-        'sm:p-12',
+        'px-4',
+        'sm:px-12',
         'min-h-0',
       )}
       dangerouslySetInnerHTML={html}

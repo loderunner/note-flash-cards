@@ -46,11 +46,22 @@ function App() {
         'items-stretch',
         'justify-center',
         'bg-slate-50',
+        'py-16',
+        'sm:py-24',
       )}
       onClick={next}
     >
       <Staff notes={notes} clef={clef} />
-      <div className={clsx('text-6xl', 'select-none', 'p-16', 'text-center')}>
+      <div
+        className={clsx(
+          'text-6xl',
+          'sm:text-9xl',
+          'select-none',
+          'text-center',
+          'tracking-wider',
+          'font-bold',
+        )}
+      >
         {stage === 'guess' ? countdown : answer}
       </div>
     </div>
