@@ -23,13 +23,14 @@ function App() {
   const answer = useMemo(() => notes.map((n) => n.pitch).join(' '), [notes]);
   const [countdown, setCountdown] = useState(6);
   useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       if (countdown === 1) {
         setStage('answer');
         return;
       }
       setCountdown(countdown - 1);
     }, 1000);
+    return () => clearTimeout(timeout);
   }, [countdown]);
   const next = useCallback(() => {
     setState(getState());
