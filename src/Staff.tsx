@@ -36,7 +36,7 @@ export default function Staff({ notes, clef }: Props) {
             keys: [`${n.pitch}/${n.octave}`],
             clef,
             duration: 'q',
-            stem_direction: n.index > midPoint.treble + 1 ? Stem.DOWN : Stem.UP,
+            stem_direction: n.index > midPoint[clef] + 1 ? Stem.DOWN : Stem.UP,
           }),
       ),
     );
@@ -51,7 +51,7 @@ export default function Staff({ notes, clef }: Props) {
 
   return (
     <div
-      className="flex h-[70%] w-full items-center justify-center p-12"
+      className="flex flex-shrink flex-grow flex-col items-center justify-center p-12"
       dangerouslySetInnerHTML={html}
     ></div>
   );

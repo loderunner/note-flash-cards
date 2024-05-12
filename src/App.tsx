@@ -50,7 +50,7 @@ function App() {
       onClick={next}
     >
       <Staff notes={notes} clef={clef} />
-      <div className={clsx('text-6xl', 'select-none')}>
+      <div className={clsx('text-6xl', 'select-none', 'p-16')}>
         {stage === 'guess' ? countdown : answer}
       </div>
     </div>
