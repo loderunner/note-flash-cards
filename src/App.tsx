@@ -41,16 +41,16 @@ function App() {
       className={clsx(
         'flex',
         'flex-col',
-        'h-[100vh]',
-        'w-[100vw]',
-        'items-center',
+        'h-dvh',
+        'w-dvw',
+        'items-stretch',
         'justify-center',
         'bg-slate-50',
       )}
       onClick={next}
     >
       <Staff notes={notes} clef={clef} />
-      <div className={clsx('text-6xl', 'select-none', 'p-16')}>
+      <div className={clsx('text-6xl', 'select-none', 'p-16', 'text-center')}>
         {stage === 'guess' ? countdown : answer}
       </div>
     </div>

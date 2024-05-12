@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Formatter, Renderer, Stave, StaveNote, Stem, Voice } from 'vexflow';
 import { Clef, Note, limits } from './notes';
@@ -51,7 +52,17 @@ export default function Staff({ notes, clef }: Props) {
 
   return (
     <div
-      className="flex flex-shrink flex-grow flex-col items-center justify-center p-12"
+      className={clsx(
+        'flex',
+        'flex-shrink',
+        'flex-grow',
+        'flex-col',
+        'items-center',
+        'justify-center',
+        'p-4',
+        'sm:p-12',
+        'min-h-0',
+      )}
       dangerouslySetInnerHTML={html}
     ></div>
   );
