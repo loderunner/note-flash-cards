@@ -1,30 +1,35 @@
 import clsx from 'clsx';
 import QRCode from 'qrcode-svg';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   Link,
   LoaderFunctionArgs,
   redirect,
   useLoaderData,
+  useNavigate,
 } from 'react-router-dom';
+import { store, useSelector } from './store';
+import { initGame } from './store/game';
 
 type LoaderData = {
   id: string;
 };
 
-function loader({ params }: LoaderFunctionArgs) {
+function loader({ params }: LoaderFunctionArgs): Response | LoaderData {
   const { id } = params;
   if (id === undefined) {
     return redirect('/new-game/toto');
   }
+  store.dispatch(initGame({ id, kind: 'owner' }));
   return { id };
 }
 
 function NewGame() {
   const { id } = useLoaderData() as LoaderData;
+
   const svg = useMemo(() => {
     const qr = new QRCode({
-      content: `${window.location.origin}/play/${id}`,
+      content: `${window.location.origin}/game/${id}`,
       ecl: 'H',
       padding: 0,
       background: 'transparent',
@@ -33,27 +38,31 @@ function NewGame() {
     });
     return { __html: qr.svg() };
   }, [id]);
+
+  const navigate = useNavigate();
+  const connected = useSelector((state) => state.game.connected);
+  useEffect(() => {
+    if (connected) {
+      navigate(`/game/${id}`);
+    }
+  }, [connected, id, navigate]);
+
   return (
-    <div
-      className={clsx(
-        'flex',
-        'flex-col',
-        'h-dvh',
-        'w-dvw',
-        'items-center',
-        'justify-center',
-        'bg-slate-50',
-        'py-16',
-        'sm:py-24',
-        'gap-16',
-      )}
-    >
+    <div className="app-flex">
       <div className="text-center text-5xl font-bold">
         Waiting for player to join...
       </div>
       <div className="size-96" dangerouslySetInnerHTML={svg} />
       <Link
-        className="rounded-lg bg-slate-300 px-8 py-6 text-4xl font-medium hover:bg-slate-400"
+        className={clsx(
+          'rounded-lg',
+          'bg-slate-300',
+          'px-8',
+          'py-6',
+          'text-4xl',
+          'font-medium',
+          'hover:bg-slate-400',
+        )}
         to={`/game/${id}`}
       >
         Start game

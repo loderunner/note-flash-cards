@@ -1,70 +1,65 @@
 import clsx from 'clsx';
-import {
-  ComponentProps,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { useCallback, useMemo } from 'react';
+import { LoaderFunctionArgs } from 'react-router-dom';
 import Staff from './Staff';
-import { getNotes } from './notes';
+import { store, useDispatch, useSelector } from './store';
+import { answered, initGame, nextCard } from './store/game';
 
-function getState(): ComponentProps<typeof Staff> {
-  const clef = Math.random() > 0.5 ? 'treble' : 'bass';
-  const notes = getNotes(4, clef, 3);
-  return { clef, notes };
+type LoaderData = {
+  id: string;
+};
+
+function loader({ params }: LoaderFunctionArgs): LoaderData {
+  const { id } = params;
+  if (id === undefined) {
+    throw new Response(null, {
+      status: 404,
+      statusText: 'Not Found',
+    });
+  }
+  if (store.getState().game.id) {
+    store.dispatch(nextCard());
+  } else {
+    store.dispatch(initGame({ id, kind: 'player' }));
+  }
+  return { id };
 }
 
-type Stage = 'guess' | 'answer';
+function Game() {
+  const card = useSelector((state) => state.game.card);
+  const stage = useSelector((state) => state.game.stage);
+  const kind = useSelector((state) => state.game.kind);
+  const showAnswer = useMemo(
+    () => kind === 'owner' || stage === 'answer',
+    [kind, stage],
+  );
+  const answer = useMemo(
+    () => card?.notes.map((n) => n.pitch).join(' '),
+    [card?.notes],
+  );
+  const dispatch = useDispatch();
+  const onClick = useCallback(() => {
+    if (stage === 'answer') {
+      dispatch(nextCard());
+    } else {
+      dispatch(answered());
+    }
+  }, [dispatch, stage]);
 
-export default function Game() {
-  const [stage, setStage] = useState<Stage>('guess');
-  const [{ clef, notes }, setState] = useState(getState());
-  const answer = useMemo(() => notes.map((n) => n.pitch).join(' '), [notes]);
-  const [countdown, setCountdown] = useState(6);
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (countdown === 1) {
-        setStage('answer');
-        return;
-      }
-      setCountdown(countdown - 1);
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }, [countdown]);
-  const next = useCallback(() => {
-    setState(getState());
-    setCountdown(6);
-    setStage('guess');
-  }, []);
   return (
-    <div
-      className={clsx(
-        'flex',
-        'flex-col',
-        'h-dvh',
-        'w-dvw',
-        'items-stretch',
-        'justify-center',
-        'bg-slate-50',
-        'py-16',
-        'sm:py-24',
-      )}
-      onClick={next}
-    >
-      <Staff notes={notes} clef={clef} />
-      <div
-        className={clsx(
-          'text-6xl',
-          'sm:text-9xl',
-          'select-none',
-          'text-center',
-          'tracking-wider',
-          'font-bold',
-        )}
-      >
-        {stage === 'guess' ? countdown : answer}
-      </div>
+    <div className="app-flex" onClick={onClick}>
+      {card ? (
+        <>
+          <Staff clef={card.clef} notes={card.notes} />
+          <div className={clsx('answer', showAnswer || 'invisible')}>
+            {answer}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }
+
+Game.loader = loader;
+
+export default Game;
