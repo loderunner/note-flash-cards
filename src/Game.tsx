@@ -1,7 +1,6 @@
 import clsx from 'clsx';
-import { useCallback, useMemo } from 'react';
+import { Suspense, lazy, useCallback, useMemo } from 'react';
 import { LoaderFunctionArgs } from 'react-router-dom';
-import Staff from './Staff';
 import { store, useDispatch, useSelector } from './store';
 import { answered, initGame, nextCard } from './store/game';
 
@@ -24,6 +23,8 @@ function loader({ params }: LoaderFunctionArgs): LoaderData {
   }
   return { id };
 }
+
+const Staff = lazy(() => import('./Staff'));
 
 function Game() {
   const card = useSelector((state) => state.game.card);
@@ -55,12 +56,12 @@ function Game() {
       onClick={onClick}
     >
       {card ? (
-        <>
+        <Suspense>
           <Staff clef={card.clef} notes={card.notes} />
           <div className={clsx('answer', showAnswer || 'invisible')}>
             {answer}
           </div>
-        </>
+        </Suspense>
       ) : null}
     </div>
   );
