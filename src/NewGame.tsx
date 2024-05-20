@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 import { nanoid } from 'nanoid';
-import QRCode from 'qrcode-svg';
 import { useEffect, useMemo } from 'react';
 import {
   Link,
@@ -9,6 +8,7 @@ import {
   useLoaderData,
   useNavigate,
 } from 'react-router-dom';
+import QRCode from './QRCode';
 import { store, useSelector } from './store';
 import { initGame } from './store/game';
 
@@ -30,17 +30,6 @@ function NewGame() {
   const { id } = useLoaderData() as LoaderData;
 
   const gameURL = useMemo(() => `${window.location.origin}/game/${id}`, [id]);
-  const svg = useMemo(() => {
-    const qr = new QRCode({
-      content: gameURL,
-      ecl: 'H',
-      padding: 0,
-      background: 'transparent',
-      color: 'currentColor',
-      container: 'svg-viewbox',
-    });
-    return { __html: qr.svg() };
-  }, [gameURL]);
 
   const navigate = useNavigate();
   const connected = useSelector((state) => state.game.connected);
@@ -55,7 +44,7 @@ function NewGame() {
       <div className="text-center text-5xl font-bold">
         Waiting for player to join...
       </div>
-      <div className="size-96" dangerouslySetInnerHTML={svg} />
+      <QRCode className="size-96" url={gameURL} />
       <Link to={gameURL}>{gameURL}</Link>
       <Link
         className={clsx(
