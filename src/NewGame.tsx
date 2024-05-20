@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { nanoid } from 'nanoid';
 import QRCode from 'qrcode-svg';
 import { useEffect, useMemo } from 'react';
 import {
@@ -16,9 +17,10 @@ type LoaderData = {
 };
 
 function loader({ params }: LoaderFunctionArgs): Response | LoaderData {
-  const { id } = params;
+  let { id } = params;
   if (id === undefined) {
-    return redirect('/new-game/toto');
+    id = nanoid(6);
+    return redirect(`/new-game/${id}`);
   }
   store.dispatch(initGame({ id, kind: 'owner' }));
   return { id };
