@@ -1,22 +1,8 @@
-import clsx from 'clsx';
 import { Link } from 'react-router-dom';
 
 export default function Welcome() {
   return (
-    <div
-      className={clsx(
-        'flex',
-        'flex-col',
-        'gap-16',
-        'h-dvh',
-        'w-dvw',
-        'items-center',
-        'justify-center',
-        'bg-slate-50',
-        'py-16',
-        'sm:py-24',
-      )}
-    >
+    <div className="app flex flex-col items-center justify-center gap-16">
       <div className="text-center text-8xl font-bold sm:text-8xl md:text-9xl">
         Note Flash Cards
       </div>

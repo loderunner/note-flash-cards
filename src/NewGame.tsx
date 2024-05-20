@@ -27,9 +27,10 @@ function loader({ params }: LoaderFunctionArgs): Response | LoaderData {
 function NewGame() {
   const { id } = useLoaderData() as LoaderData;
 
+  const gameURL = useMemo(() => `${window.location.origin}/game/${id}`, [id]);
   const svg = useMemo(() => {
     const qr = new QRCode({
-      content: `${window.location.origin}/game/${id}`,
+      content: gameURL,
       ecl: 'H',
       padding: 0,
       background: 'transparent',
@@ -37,7 +38,7 @@ function NewGame() {
       container: 'svg-viewbox',
     });
     return { __html: qr.svg() };
-  }, [id]);
+  }, [gameURL]);
 
   const navigate = useNavigate();
   const connected = useSelector((state) => state.game.connected);
@@ -48,11 +49,12 @@ function NewGame() {
   }, [connected, id, navigate]);
 
   return (
-    <div className="app-flex">
+    <div className="app flex flex-col items-center justify-center gap-16">
       <div className="text-center text-5xl font-bold">
         Waiting for player to join...
       </div>
       <div className="size-96" dangerouslySetInnerHTML={svg} />
+      <Link to={gameURL}>{gameURL}</Link>
       <Link
         className={clsx(
           'rounded-lg',

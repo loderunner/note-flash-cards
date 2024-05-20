@@ -1,14 +1,20 @@
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  PayloadAction,
+  createAsyncThunk,
+  createSlice,
+  isAnyOf,
+} from '@reduxjs/toolkit';
 
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { Clef, Note, getNotes } from '~/notes';
 import supabase from '~/supabase';
 import { store } from '.';
 import { startListening } from './middleware';
+import { isSetCardPayload } from './validators';
 
-type PlayerKind = 'owner' | 'player';
-type Stage = 'guess' | 'answer';
-type Card = {
+export type PlayerKind = 'owner' | 'player';
+export type Stage = 'guess' | 'answer';
+export type Card = {
   clef: Clef;
   notes: Note[];
 };
@@ -26,7 +32,7 @@ type InitGamePayload = {
   kind: PlayerKind;
 };
 
-async function sendState({
+function sendState({
   channel,
   getState,
 }: {
@@ -56,9 +62,6 @@ export const initGame = createAsyncThunk(
         console.log(`join: key=${key}`);
         if (key !== kind) {
           dispatch(gameSlice.actions.setConnected(true));
-          if (kind === 'owner') {
-            await sendState({ channel, getState: store.getState });
-          }
         }
       })
       .on('presence', { event: 'leave' }, ({ key }) => {
@@ -72,9 +75,13 @@ export const initGame = createAsyncThunk(
         if (status === 'SUBSCRIBED') {
           await channel.track({});
           startListening({
-            actionCreator: nextCard,
+            matcher: isAnyOf(
+              nextCard,
+              answered,
+              gameSlice.actions.setConnected,
+            ),
             effect: async (_, { getState }) => {
-              if (kind === 'owner') {
+              if (kind === 'owner' && getState().game.connected) {
                 await sendState({ channel, getState });
               }
             },
@@ -83,17 +90,15 @@ export const initGame = createAsyncThunk(
       })
       .on('broadcast', { event: 'state' }, (payload) => {
         console.log(`broadcast: event=${payload.event}`);
-        if (kind === 'player') {
-          dispatch(
-            gameSlice.actions.setCard(payload as unknown as SetCardPayload),
-          );
+        if (kind === 'player' && isSetCardPayload(payload)) {
+          dispatch(gameSlice.actions.setCard(payload));
         }
       });
     return { id, kind };
   },
 );
 
-type SetCardPayload = {
+export type SetCardPayload = {
   card: Card;
   stage: Stage;
 };

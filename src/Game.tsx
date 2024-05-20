@@ -39,15 +39,21 @@ function Game() {
   );
   const dispatch = useDispatch();
   const onClick = useCallback(() => {
+    if (kind === 'player') {
+      return;
+    }
     if (stage === 'answer') {
       dispatch(nextCard());
     } else {
       dispatch(answered());
     }
-  }, [dispatch, stage]);
+  }, [dispatch, stage, kind]);
 
   return (
-    <div className="app-flex" onClick={onClick}>
+    <div
+      className="app flex flex-col items-stretch justify-center gap-16"
+      onClick={onClick}
+    >
       {card ? (
         <>
           <Staff clef={card.clef} notes={card.notes} />
