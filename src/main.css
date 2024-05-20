@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .app {
+    @apply flex h-dvh w-dvw  bg-slate-50 py-16 sm:py-24;
+  }
+  .answer {
+    @apply select-none text-center text-6xl font-bold tracking-wider sm:text-9xl;
+  }
+}
