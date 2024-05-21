@@ -6,7 +6,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import { RealtimeChannel } from '@supabase/supabase-js';
-import { Clef, Note, getNotes } from '~/notes';
+import { Clef, Note, getNotes } from '~/components/notes';
 import supabase from '~/supabase';
 import { store } from '.';
 import { startListening } from './middleware';
@@ -119,7 +119,7 @@ export const gameSlice = createSlice({
     },
     nextCard(state) {
       const clef: Clef = Math.random() > 0.5 ? 'treble' : 'bass';
-      const notes = getNotes(4, clef, 3);
+      const notes = getNotes(12, clef, 4);
       state.card = { clef, notes };
       state.stage = 'guess';
     },

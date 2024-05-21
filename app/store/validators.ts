@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Clef, Note } from '~/notes';
+import { Clef, Note } from '~/components/notes';
 import { Card, SetCardPayload, Stage } from './game';
 
 export function isNote(note: unknown): note is Note {

@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@remix-run/react';
 
-export default function Welcome() {
+export default function Index() {
   return (
     <div className="app flex flex-col items-center justify-center gap-16">
       <div className="text-center text-8xl font-bold sm:text-8xl md:text-9xl">

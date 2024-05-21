@@ -1,22 +1,18 @@
-import clsx from 'clsx';
-import { nanoid } from 'nanoid';
-import { useEffect, useMemo } from 'react';
 import {
+  ClientLoaderFunctionArgs,
   Link,
-  LoaderFunctionArgs,
   redirect,
   useLoaderData,
   useNavigate,
-} from 'react-router-dom';
-import QRCode from './QRCode';
-import { store, useSelector } from './store';
-import { initGame } from './store/game';
+} from '@remix-run/react';
+import clsx from 'clsx';
+import { nanoid } from 'nanoid';
+import { useEffect, useMemo } from 'react';
+import QRCode from '~/components/QRCode';
+import { store, useSelector } from '~/store';
+import { initGame } from '~/store/game';
 
-type LoaderData = {
-  id: string;
-};
-
-function loader({ params }: LoaderFunctionArgs): Response | LoaderData {
+export function clientLoader({ params }: ClientLoaderFunctionArgs) {
   let { id } = params;
   if (id === undefined) {
     id = nanoid(6);
@@ -26,8 +22,8 @@ function loader({ params }: LoaderFunctionArgs): Response | LoaderData {
   return { id };
 }
 
-function NewGame() {
-  const { id } = useLoaderData() as LoaderData;
+export default function NewGame() {
+  const { id } = useLoaderData<typeof clientLoader>();
 
   const gameURL = useMemo(() => `${window.location.origin}/game/${id}`, [id]);
 
@@ -63,7 +59,3 @@ function NewGame() {
     </div>
   );
 }
-
-NewGame.loader = loader;
-
-export default NewGame;

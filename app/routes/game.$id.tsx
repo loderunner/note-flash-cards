@@ -1,14 +1,11 @@
+import { ClientLoaderFunctionArgs } from '@remix-run/react';
 import clsx from 'clsx';
-import { Suspense, lazy, useCallback, useMemo } from 'react';
-import { LoaderFunctionArgs } from 'react-router-dom';
-import { store, useDispatch, useSelector } from './store';
-import { answered, initGame, nextCard } from './store/game';
+import { useCallback, useMemo } from 'react';
+import Staff from '~/components/Staff';
+import { store, useDispatch, useSelector } from '~/store';
+import { answered, initGame, nextCard } from '~/store/game';
 
-type LoaderData = {
-  id: string;
-};
-
-function loader({ params }: LoaderFunctionArgs): LoaderData {
+export function clientLoader({ params }: ClientLoaderFunctionArgs) {
   const { id } = params;
   if (id === undefined) {
     throw new Response(null, {
@@ -24,20 +21,21 @@ function loader({ params }: LoaderFunctionArgs): LoaderData {
   return { id };
 }
 
-const Staff = lazy(() => import('./Staff'));
-
-function Game() {
+export default function Game() {
   const card = useSelector((state) => state.game.card);
   const stage = useSelector((state) => state.game.stage);
   const kind = useSelector((state) => state.game.kind);
+
   const showAnswer = useMemo(
     () => kind === 'owner' || stage === 'answer',
     [kind, stage],
   );
+
   const answer = useMemo(
     () => card?.notes.map((n) => n.pitch).join(' '),
     [card?.notes],
   );
+
   const dispatch = useDispatch();
   const onClick = useCallback(() => {
     if (kind === 'player') {
@@ -56,17 +54,13 @@ function Game() {
       onClick={onClick}
     >
       {card ? (
-        <Suspense>
+        <>
           <Staff clef={card.clef} notes={card.notes} />
           <div className={clsx('answer', showAnswer || 'invisible')}>
             {answer}
           </div>
-        </Suspense>
+        </>
       ) : null}
     </div>
   );
 }
-
-Game.loader = loader;
-
-export default Game;
