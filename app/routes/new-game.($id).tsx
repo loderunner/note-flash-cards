@@ -40,7 +40,9 @@ export default function NewGame() {
       <div className="text-center text-5xl font-bold">
         Waiting for player to join...
       </div>
-      <QRCode className="size-96" url={gameURL} />
+      <Link to={gameURL}>
+        <QRCode className="size-96" url={gameURL} />
+      </Link>
       <Link to={gameURL}>{gameURL}</Link>
       <Link
         className={clsx(

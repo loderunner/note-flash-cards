@@ -1,9 +1,10 @@
 import { ClientLoaderFunctionArgs } from '@remix-run/react';
 import clsx from 'clsx';
-import { useCallback, useMemo } from 'react';
-import Staff from '~/components/Staff';
+import { Suspense, lazy, useCallback, useMemo } from 'react';
 import { store, useDispatch, useSelector } from '~/store';
 import { answered, initGame, nextCard } from '~/store/game';
+
+const Staff = lazy(() => import('~/components/Staff'));
 
 export function clientLoader({ params }: ClientLoaderFunctionArgs) {
   const { id } = params;
@@ -54,12 +55,12 @@ export default function Game() {
       onClick={onClick}
     >
       {card ? (
-        <>
+        <Suspense>
           <Staff clef={card.clef} notes={card.notes} />
           <div className={clsx('answer', showAnswer || 'invisible')}>
             {answer}
           </div>
-        </>
+        </Suspense>
       ) : null}
     </div>
   );

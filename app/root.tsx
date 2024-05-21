@@ -1,14 +1,9 @@
-import { LinksFunction } from '@remix-run/node';
 import { Links, Meta, Outlet, Scripts } from '@remix-run/react';
 import { Provider } from 'react-redux';
 import Index from './routes/_index';
 import { store } from './store';
 
-import rootCSS from './root.css?url';
-
-export const links: LinksFunction = () => [
-  { rel: 'stylesheet', href: rootCSS },
-];
+import './root.css';
 
 export default function App() {
   return (
